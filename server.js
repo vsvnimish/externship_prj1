@@ -8,7 +8,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
 	extended:true
 }));
-function message(status,body){
+function msg(status,body){
 	var msg={
 		"success" : status,
 		"message" : body
@@ -19,39 +19,33 @@ app.post('/',function(req,res){
 	var mail_id=req.body.to
 	var mail_body=req.body.email_body
 	const nodemailer = require('nodemailer');
-// Generate SMTP service account from ethereal.email
-nodemailer.createTestAccount((err, account) => {
-	if (err) {
-		res.status(500).json(message(false,err.message))
-	}
-	console.log('Credentials obtained, sending message...');
-    // Create a SMTP transporter object
-    let transporter = nodemailer.createTransport({
-    	host: account.smtp.host,
-    	port: account.smtp.port,
-    	secure: account.smtp.secure,
-    	auth: {
-    		user: account.user,
-    		pass: account.pass
-    	}
-    });
+  // Message object
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+    port: 587,
+    secure: false,
+    auth: {
+        user: 'gaetano.kovacek77@ethereal.email',
+        pass: 'PRKm32PP5gv8cCTGcq'
+    }
+});
+  // console.log('hi')
+  let message = {
+    from: 'gaetano.kovacek77@ethereal.email',
+    to: mail_id,
+    subject: 'Nodemailer is unicode friendly ✔',
+    text: mail_body,
+    html: '<p><b>Hello</b> to myself!</p>'
+};
+transporter.sendMail(message, (err, info) => {
 
-    // Message object
-    let message = {
-    	from: account.user,
-    	to: mail_id,
-    	subject: 'Nodemailer is unicode friendly ✔',
-    	text: mail_body,
-    	html: '<p><b>Hello</b> to myself!</p>'
-    };
+    if (err) {
+        res.status(500).json(msg(false,err.message))
+            // return process.exit(1);
+        }
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    }); 
 
-    transporter.sendMail(message, (err, info) => {
-    	if (err) {
-    		res.status(500).json(message(false,err.message))
-    		// return process.exit(1);
-    	}
-    	console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    });
-});    
- res.status(200).json(message(true,"Email sent successfully"))
+res.status(200).json(msg(true,"Email sent successfully"))
+// console.log('hi') 
 })
