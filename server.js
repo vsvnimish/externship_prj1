@@ -20,10 +20,6 @@ app.post('/',function(req,res){
 	var mail_body=req.body.email_body
 	const nodemailer = require('nodemailer');
 // Generate SMTP service account from ethereal.email
-var sucess_msg={
-	"success" : true,
-	"message" : "Email sent successfully"
-}
 nodemailer.createTestAccount((err, account) => {
 	if (err) {
 		res.status(200).json(message(false,err.message))
