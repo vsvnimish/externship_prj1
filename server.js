@@ -22,8 +22,7 @@ app.post('/',function(req,res){
 // Generate SMTP service account from ethereal.email
 nodemailer.createTestAccount((err, account) => {
 	if (err) {
-		res.status(200).json(message(false,err.message))
-		return process.exit(1);
+		res.status(500).json(message(false,err.message))
 	}
 	console.log('Credentials obtained, sending message...');
     // Create a SMTP transporter object
@@ -48,15 +47,11 @@ nodemailer.createTestAccount((err, account) => {
 
     transporter.sendMail(message, (err, info) => {
     	if (err) {
-    		res.status(200).json(message(false,err.message))
-    		return process.exit(1);
+    		res.status(500).json(message(false,err.message))
+    		// return process.exit(1);
     	}
     	console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-        // console.log("suc")
-
     });
 });    
-
-res.status(200).json(message(true,"Email sent successfully"))
-return process.exit(1);
+ res.status(200).json(message(true,"Email sent successfully"))
 })
